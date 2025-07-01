@@ -1,7 +1,7 @@
 import express from "express";
 import { verifyToken } from '../middleware/verifyToken.js'
 import { addGroup, addUser, login, addRecords, addSlot } from './../controller/postController.js'
-import { getGroups, getUserAccess, logout, getUserEdit, getRecords, groupSlot, getSlot, getImage } from "../controller/getController.js";
+import { getGroups, getUserAccess, logout, getUserEdit, getRecords, groupSlot, getSlot, getImage, getAllSlot } from "../controller/getController.js";
 import { deleteGroups, deleteUsers, deleteSlot, deleteRecord } from '../controller/deleteController.js'
 import { updateGroup, updateUser, updateUserData, updateSlot, editRecords } from "../controller/putController.js";
 import upload from "./../lib/multer.js"
@@ -30,5 +30,6 @@ router.get("/getRecords", verifyToken, getRecords)
 router.delete("/deleteRecord", verifyToken, deleteRecord)
 router.get("/uploads/:image", verifyToken, getImage)
 router.put("/editRecords", verifyToken, upload, editRecords)
+router.get("/getAllSlot", verifyToken, getAllSlot)
 
 export default router;

@@ -91,3 +91,13 @@ export const getImage = async (req, res)=>{
     const imagePath = path.join(__dirname, '../uploads', req.params.image);
     return res.sendFile(imagePath);
 }
+
+export const getAllSlot = async (req, res)=>{
+    try {
+        const db = await connectToDatabase();
+        const [result] = await db.promise().query("SELECT r.`id` AS record_id, s.`id` AS slot_id, gt.`id` AS group_id, s.`slot_name`, gt.`group_name`, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix` FROM `slot` s LEFT JOIN `records_tb` r ON r.`slot_id` = s.`id` INNER JOIN `group_tb` gt ON s.`group_id` = gt.`id` ORDER BY s.`id` DESC;")
+        return res.status(200).json(result)
+    } catch (error) {
+        return res.status(500).json({message: "Server error"})
+    }
+}

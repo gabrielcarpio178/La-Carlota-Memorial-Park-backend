@@ -35,7 +35,7 @@ export const addUser = async (req, res)=>{
 }
 
 export const login = async (req, res) =>{
-
+    const {username, password} = req.body;
     const dataSchema = Joi.object({
         username: Joi.string().min(3).required(),
         password: Joi.string().min(3).required()
@@ -43,14 +43,13 @@ export const login = async (req, res) =>{
     const {error}= dataSchema.validate(req.body);
     if (error) return res.status(400).json({ message: 'Validation error', details: error.details });
 
-    const {username, password} = req.body;
     try {
         const db = await connectToDatabase();
         const [userData] = await db.promise().query("SELECT * FROM user_tb WHERE username = ?", [username]);
-        const isValidPassword = await bcrypt.compare(password, userData[0].password)
         if(userData.length===0){
             return res.status(401).json({message: "user not find"});
         }
+        const isValidPassword = await bcrypt.compare(password, userData[0].password)
         if(!isValidPassword){
             return res.status(401).json({message: "username or password not match"});
         }

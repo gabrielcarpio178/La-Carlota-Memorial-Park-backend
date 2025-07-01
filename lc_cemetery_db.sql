@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 29, 2025 at 04:01 AM
+-- Generation Time: Jul 01, 2025 at 07:38 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -69,8 +69,11 @@ CREATE TABLE `records_tb` (
 --
 
 INSERT INTO `records_tb` (`id`, `group_id`, `slot_id`, `firstname`, `lastname`, `suffix`, `middlename`, `born`, `died`, `image_name`) VALUES
-(1, 9, 23, 'Eduardo', 'Achurra', 'N/A', 'J', '1936-05-19', '2008-08-07', '1751162289638-334145479.jpg'),
-(2, 6, 12, 'Carlos', 'Berings', 'SR', 'B', '1947-12-01', '2007-11-08', '1751162411253-720093957.jpg');
+(2, 6, 10, 'Carlos', 'Berings', 'SR', 'B', '1947-12-01', '2007-11-08', '1751277303855-255548529.jpg'),
+(3, 7, 19, 'elma', 'garcia', 'N/A', 'F', '1981-03-28', '2001-04-01', '1751260787818-355416974.jpg'),
+(4, 6, 12, 'isidora', 'galang', 'N/A', 'A', '1943-04-08', '2006-04-10', '1751260936342-490615489.jpg'),
+(5, 9, 25, ' Eduardo', 'achurra', 'N/A', 'J', '1936-05-19', '2008-08-07', '1751344838551-204822293.jpg'),
+(6, 9, 25, 'Clodualdo', 'Mendoza', 'N/A', 'D', '1920-09-07', '2000-10-26', '1751277413573-153955800.jpg');
 
 -- --------------------------------------------------------
 
@@ -105,7 +108,8 @@ INSERT INTO `slot` (`id`, `group_id`, `slot_name`) VALUES
 (22, 5, 'slot b'),
 (23, 9, 'slot a'),
 (24, 9, 'slot b'),
-(25, 9, 'slot c');
+(25, 9, 'slot c'),
+(30, 11, 'slot a');
 
 -- --------------------------------------------------------
 
@@ -128,7 +132,7 @@ CREATE TABLE `user_tb` (
 --
 
 INSERT INTO `user_tb` (`id`, `firstname`, `lastname`, `role`, `isActive`, `username`, `password`) VALUES
-(1, 'gabriel', 'carpio', 'admin', 1, 'admin', '$2b$10$zlmoAtOCVRZBpYEu7JRQ4OzhTMUytGEO9eiCxh9pdqZPq1/95NT92'),
+(1, 'gabriel', 'carpio', 'admin', 0, 'admin', '$2b$10$zlmoAtOCVRZBpYEu7JRQ4OzhTMUytGEO9eiCxh9pdqZPq1/95NT92'),
 (2, 'gabriel', 'carpio', 'encoder', 0, 'gabriel', '$2b$10$WW5qvDdmbS.rVs8k8j5lQecAYc69/bUPtg.CFt9fiKrtDLZ97QRBu');
 
 --
@@ -176,13 +180,13 @@ ALTER TABLE `group_tb`
 -- AUTO_INCREMENT for table `records_tb`
 --
 ALTER TABLE `records_tb`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `slot`
 --
 ALTER TABLE `slot`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `user_tb`
