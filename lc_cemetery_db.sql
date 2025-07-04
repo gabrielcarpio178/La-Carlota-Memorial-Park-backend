@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 01, 2025 at 07:38 AM
+-- Generation Time: Jul 03, 2025 at 05:40 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -48,6 +48,20 @@ INSERT INTO `group_tb` (`id`, `group_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payment_tb`
+--
+
+CREATE TABLE `payment_tb` (
+  `id` int(11) NOT NULL,
+  `slot_id` int(11) NOT NULL,
+  `fullname` varchar(255) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `paymentDate` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `records_tb`
 --
 
@@ -72,8 +86,8 @@ INSERT INTO `records_tb` (`id`, `group_id`, `slot_id`, `firstname`, `lastname`, 
 (2, 6, 10, 'Carlos', 'Berings', 'SR', 'B', '1947-12-01', '2007-11-08', '1751277303855-255548529.jpg'),
 (3, 7, 19, 'elma', 'garcia', 'N/A', 'F', '1981-03-28', '2001-04-01', '1751260787818-355416974.jpg'),
 (4, 6, 12, 'isidora', 'galang', 'N/A', 'A', '1943-04-08', '2006-04-10', '1751260936342-490615489.jpg'),
-(5, 9, 25, ' Eduardo', 'achurra', 'N/A', 'J', '1936-05-19', '2008-08-07', '1751344838551-204822293.jpg'),
-(6, 9, 25, 'Clodualdo', 'Mendoza', 'N/A', 'D', '1920-09-07', '2000-10-26', '1751277413573-153955800.jpg');
+(5, 9, 25, ' Eduardo', 'achurra', 'N/A', 'J', '1936-05-19', '2008-08-07', '1751390357910-461886430.jpg'),
+(6, 9, 23, 'Clodualdo', 'Mendoza', 'N/A', 'D', '1920-09-07', '2000-10-26', '1751435137054-315234393.jpg');
 
 -- --------------------------------------------------------
 
@@ -132,7 +146,7 @@ CREATE TABLE `user_tb` (
 --
 
 INSERT INTO `user_tb` (`id`, `firstname`, `lastname`, `role`, `isActive`, `username`, `password`) VALUES
-(1, 'gabriel', 'carpio', 'admin', 0, 'admin', '$2b$10$zlmoAtOCVRZBpYEu7JRQ4OzhTMUytGEO9eiCxh9pdqZPq1/95NT92'),
+(1, 'gabriel', 'carpio', 'admin', 1, 'admin', '$2b$10$zlmoAtOCVRZBpYEu7JRQ4OzhTMUytGEO9eiCxh9pdqZPq1/95NT92'),
 (2, 'gabriel', 'carpio', 'encoder', 0, 'gabriel', '$2b$10$WW5qvDdmbS.rVs8k8j5lQecAYc69/bUPtg.CFt9fiKrtDLZ97QRBu');
 
 --
@@ -144,6 +158,13 @@ INSERT INTO `user_tb` (`id`, `firstname`, `lastname`, `role`, `isActive`, `usern
 --
 ALTER TABLE `group_tb`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `payment_tb`
+--
+ALTER TABLE `payment_tb`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `slot_id` (`slot_id`);
 
 --
 -- Indexes for table `records_tb`
@@ -177,6 +198,12 @@ ALTER TABLE `group_tb`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `payment_tb`
+--
+ALTER TABLE `payment_tb`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `records_tb`
 --
 ALTER TABLE `records_tb`
@@ -197,6 +224,12 @@ ALTER TABLE `user_tb`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `payment_tb`
+--
+ALTER TABLE `payment_tb`
+  ADD CONSTRAINT `paymen_tb_ibfk_1` FOREIGN KEY (`slot_id`) REFERENCES `slot` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `records_tb`

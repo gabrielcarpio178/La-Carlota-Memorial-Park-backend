@@ -154,3 +154,26 @@ export const addRecords = async (req, res) =>{
         return res.status(500).json({message: "server error"})
     }
 }
+
+export const sendPayment = async (req, res)=>{
+
+    const schema = Joi.object({
+        slotId: Joi.number().positive().required(),
+        fullname: Joi.string().required(),
+        amount: Joi.number().positive().required()
+    })
+
+    const {error} = schema.validate(req.body)
+    if (error) return res.status(400).json({ message: 'Validation error', details: error.details });
+
+    const {slotId, fullname, amount} = req.body;
+    const currentDate = moment().format('YYYY-MM-DD')
+    
+    try {
+        const db = await connectToDatabase()
+        await db.promise().query("INSERT INTO `payment_tb`(`slot_id`, `fullname`, `amount`, `paymentDate`) VALUES (?, ?, ?, ?)", [slotId, fullname, amount, currentDate])
+        return res.status(200).json({message: 'add success'})
+    } catch (error) {
+        return res.status(500).json({message: "server error"})
+    }
+}

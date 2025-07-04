@@ -95,9 +95,31 @@ export const getImage = async (req, res)=>{
 export const getAllSlot = async (req, res)=>{
     try {
         const db = await connectToDatabase();
-        const [result] = await db.promise().query("SELECT r.`id` AS record_id, s.`id` AS slot_id, gt.`id` AS group_id, s.`slot_name`, gt.`group_name`, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix` FROM `slot` s LEFT JOIN `records_tb` r ON r.`slot_id` = s.`id` INNER JOIN `group_tb` gt ON s.`group_id` = gt.`id` ORDER BY s.`id` DESC;")
+        const [result] = await db.promise().query("SELECT r.`id` AS record_id, s.`id` AS slot_id, gt.`id` AS group_id, s.`slot_name`, gt.`group_name`, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix`, pt.`amount` FROM `slot` s LEFT JOIN `records_tb` r ON r.`slot_id` = s.`id` INNER JOIN `group_tb` gt ON s.`group_id` = gt.`id` LEFT JOIN payment_tb pt ON pt.`slot_id` = s.`id` ORDER BY s.`id` DESC;")
         return res.status(200).json(result)
     } catch (error) {
-        return res.status(500).json({message: "Server error"})
+        return res.status(500).json({message: "server error"})
+    }
+}
+
+export const getpaymentbygroup = async (req, res) =>{
+
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT gt.id, pt.slot_id ,st.slot_name, st.group_id ,gt.group_name, SUM(pt.amount) AS total_amount, pt.paymentDate FROM payment_tb pt INNER JOIN slot st ON pt.slot_id = st.id RIGHT JOIN group_tb gt ON st.group_id = gt.id GROUP BY gt.id;")
+        return res.status(200).json(result)
+    } catch (error) {
+        return res.status(500).json({message: "server error"})
+    }
+
+}
+
+export const getpaymentHistory = async (req, res)=>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT pt.id, pt.fullname, pt.amount, pt.paymentDate, pt.slot_id, st.slot_name, gt.group_name FROM payment_tb pt INNER JOIN slot st ON pt.slot_id = st.id INNER JOIN group_tb gt ON st.group_id = gt.id ORDER BY pt.id DESC;")
+        return res.status(200).json(result)
+    } catch (error) {
+        return res.status(500).json({message: "server error"})
     }
 }
