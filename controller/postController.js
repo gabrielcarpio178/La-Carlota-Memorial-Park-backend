@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Joi from 'joi';
 import moment from 'moment/moment.js';
+import cloudinary from './../utils/cloudinary.js'
 
 
 export const addUser = async (req, res)=>{
@@ -137,22 +138,33 @@ export const addRecords = async (req, res) =>{
     if (!allowedTypes.includes(req.file.mimetype)) {
         return res.status(400).json({ message: "Only image files are allowed", details: [{message: 'Only image files are allowed', path: ['image']}] });
     }
-
+    
     const {group_id, slot_id ,firstname, lastname, born, died, suffix, middlename} = req.body
     const familyRoleSuffixes = ["JR", "SR", "II", "III", "IV","V", "N/A"];
-    
-    if(!familyRoleSuffixes.includes(suffix.toUpperCase())) return res.status(400).json({ message: "Invalid suffix", details: [{message: '"suffix" is not available', path: ['suffix']}] })
-    
     const image_name = req.file.filename
-
-    try {
-        const db = await connectToDatabase()
-        await db.promise().query("INSERT INTO `records_tb`(`group_id`, `slot_id`, `firstname`, `lastname`, `born`, `died`, `suffix`,`middlename`, `image_name`) VALUES (?,?,?,?,?,?,?,?,?)", [group_id, slot_id, firstname, lastname, born, died, suffix.toUpperCase(),middlename.toUpperCase(),image_name])
-        return res.status(200).json({message: "add success"})
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({message: "server error"})
-    }
+    if(!familyRoleSuffixes.includes(suffix.toUpperCase())) return res.status(400).json({ message: "Invalid suffix", details: [{message: '"suffix" is not available', path: ['suffix']}] })
+    const cloud_image_name = image_name.replace(/\.[^/.]+$/, "");
+    cloudinary.uploader.upload(req.file.path,  {
+        public_id: cloud_image_name,
+        folder: 'uploads', 
+    }, async function  (err, result){
+        if(err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "Error"
+            })
+        }
+        try {
+            const db = await connectToDatabase()
+            await db.promise().query("INSERT INTO `records_tb`(`group_id`, `slot_id`, `firstname`, `lastname`, `born`, `died`, `suffix`,`middlename`, `image_name`) VALUES (?,?,?,?,?,?,?,?,?)", [group_id, slot_id, firstname, lastname, born, died, suffix.toUpperCase(),middlename.toUpperCase(),image_name])
+            return res.status(200).json({message: "add success"})
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "server error"})
+        }
+    })
+    
 }
 
 export const sendPayment = async (req, res)=>{

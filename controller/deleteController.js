@@ -1,6 +1,7 @@
 import Joi from "joi"
 import { connectToDatabase } from "../lib/db.js";
 import { unlink } from 'node:fs';
+import cloudinary from './../utils/cloudinary.js'
 
 export const deleteUsers = async (req, res) =>{
 
@@ -69,6 +70,7 @@ export const deleteRecord = async (req, res) =>{
     if(error) return res.status(400).json({message: 'Validation error', details: error.details});
 
     const {id, image_name} = req.body;
+    const cloud_image_name = image_name.replace(/\.[^/.]+$/, "");
     try {
         const db = await connectToDatabase()
         await db.promise().query("DELETE FROM `records_tb` WHERE `id` = ?", [id]);
@@ -76,6 +78,10 @@ export const deleteRecord = async (req, res) =>{
             if (err) return res.status(400).json({message: "no old image"});
             return res.status(200).json({message: "delete success"})
         });
+        const cloudResult = await cloudinary.uploader.destroy("uploads/"+cloud_image_name);
+        if (cloudResult.result !== 'ok') {
+            return res.status(500).json({message: "server error"})
+        }
     } catch (error) {
         return res.status(500).json({message: "server error"})
     }

@@ -4,6 +4,7 @@ import { hasUpdateAccount, hasGroup, hasValidPassword, hasSlotName } from "./che
 import bcrypt from 'bcrypt'
 import { unlink } from 'node:fs';
 import moment from "moment";
+import cloudinary from './../utils/cloudinary.js'
 
 export const updateUser = async (req, res) =>{
 
@@ -150,12 +151,32 @@ export const editRecords = async (req, res)=>{
         if (err) return res.status(500).json({message: "no old image"});
     });
     const image_name = req.file.filename
-    try {
-        const db = await connectToDatabase()
-        await db.promise().query("UPDATE `records_tb` SET `group_id`=?,`slot_id`=?,`firstname`=?,`lastname`=?,`suffix`=?,`middlename`=?,`born`=?,`died`=?,`image_name`=? WHERE `id` = ?", [group_id, slot_id, firstname, lastname, suffix, middlename, born, died, image_name, id])
-        return res.status(200).json({message: "update success"})
-    } catch (error) {
-        console.log(error)
+    const cloud_image_name = file_name.replace(/\.[^/.]+$/, "");
+    const new_cloud_image_name = image_name.replace(/\.[^/.]+$/, "")
+    const cloudResult = await cloudinary.uploader.destroy("uploads/"+cloud_image_name);
+    if (cloudResult.result !== 'ok') {
         return res.status(500).json({message: "server error"})
     }
+
+    cloudinary.uploader.upload(req.file.path,  {
+        public_id: new_cloud_image_name,
+        folder: 'uploads', 
+    }, async function  (err, result){
+        if(err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                message: "Error"
+            })
+        }
+        try {
+            const db = await connectToDatabase()
+            await db.promise().query("UPDATE `records_tb` SET `group_id`=?,`slot_id`=?,`firstname`=?,`lastname`=?,`suffix`=?,`middlename`=?,`born`=?,`died`=?,`image_name`=? WHERE `id` = ?", [group_id, slot_id, firstname, lastname, suffix, middlename, born, died, image_name, id])
+            return res.status(200).json({message: "update success"})
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({message: "server error"})
+        }
+    })
+
 }
