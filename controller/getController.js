@@ -95,7 +95,7 @@ export const getImage = async (req, res)=>{
 export const getAllSlot = async (req, res)=>{
     try {
         const db = await connectToDatabase();
-        const [result] = await db.promise().query("SELECT r.`id` AS record_id, s.`id` AS slot_id, gt.`id` AS group_id, s.`slot_name`, gt.`group_name`, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix`, pt.`amount` FROM `slot` s LEFT JOIN `records_tb` r ON r.`slot_id` = s.`id` INNER JOIN `group_tb` gt ON s.`group_id` = gt.`id` LEFT JOIN payment_tb pt ON pt.`slot_id` = s.`id` ORDER BY s.`id` DESC;")
+        const [result] = await db.promise().query("SELECT s.`id` AS slot_id, s.`slot_name`, gt.`id` AS group_id, gt.`group_name`, r.`id` AS record_id, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix`, SUM(pt.`amount`) AS total_amount FROM `slot` s LEFT JOIN `records_tb` r ON r.`slot_id` = s.`id` INNER JOIN `group_tb` gt ON s.`group_id` = gt.`id` LEFT JOIN `payment_tb` pt ON pt.`slot_id` = s.`id` GROUP BY s.`id`, s.`slot_name`, gt.`id`, gt.`group_name`, r.`id`, r.`firstname`, r.`lastname`, r.`middlename`, r.`suffix` ORDER BY s.`id` DESC;")
         return res.status(200).json(result)
     } catch (error) {
         return res.status(500).json({message: "server error"})
