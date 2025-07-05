@@ -123,3 +123,66 @@ export const getpaymentHistory = async (req, res)=>{
         return res.status(500).json({message: "server error"})
     }
 }
+
+
+const barGraphData = async () =>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT DATE_FORMAT(paymentDate, '%Y-%m') AS month, SUM(amount) AS total_amount FROM payment_tb GROUP BY DATE_FORMAT(paymentDate, '%Y-%m') ORDER BY month;")
+        return result
+    } catch (error) {
+        return error
+    }
+}
+
+const pieGraphData = async ()=>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT gt.group_name, COUNT(rt.id) AS record_count FROM group_tb gt LEFT JOIN records_tb rt ON rt.group_id = gt.id GROUP BY gt.id, gt.group_name ORDER BY gt.id DESC;")
+        return result
+    } catch (error) {
+        return error
+    }
+}
+
+const lineGraphData = async () =>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT YEAR(died) AS death_year, COUNT(*) AS death_count FROM records_tb WHERE died IS NOT NULL GROUP BY YEAR(died) ORDER BY death_year;")
+        return result
+    } catch (error) {
+        return error
+    }
+}
+
+const doughnutGraphData = async () =>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT gt.group_name, COALESCE(SUM(pt.amount), 0) AS total_amount FROM group_tb gt LEFT JOIN slot st ON st.group_id = gt.id LEFT JOIN payment_tb pt ON pt.slot_id = st.id GROUP BY gt.id, gt.group_name ORDER BY gt.id DESC;")
+        return result
+    } catch (error) {
+        return error
+    }
+}
+const totalsData = async () =>{
+    try {
+        const db = await connectToDatabase()
+        const [result] = await db.promise().query("SELECT (SELECT SUM(amount) FROM payment_tb) AS total_payment, (SELECT COUNT(*) FROM records_tb) AS total_burial;")
+        return result[0]
+    } catch (error) {
+        return error
+    }
+}
+
+export const getDashboard = async (req, res) =>{
+    try {
+        const barGraph = await barGraphData();
+        const pieGraph = await pieGraphData();
+        const lineGraph = await lineGraphData();
+        const doughnutGraph = await doughnutGraphData();
+        const totals = await totalsData();
+        return res.status(200).json({ barGraph, pieGraph, lineGraph, doughnutGraph, totals });
+    } catch (error) {
+        return res.status(500).json({ message: "server error"});
+    }
+}
